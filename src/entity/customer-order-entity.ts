@@ -1,15 +1,16 @@
 import { Entity, Column, PrimaryGeneratedColumn } from "typeorm";
+import { kMaxLength } from "buffer";
 
 @Entity("Order")
-export class Order {
+export class CustomerOrder {
 
     @PrimaryGeneratedColumn()
-    OrderID!: number;
+    CustOrderID!: number;
 
     @Column({
         
     })
-    CartID!: number;
+    OrderDetails!: string;
 
     @Column({
         

@@ -8,16 +8,16 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 const inversify_1 = require("inversify");
 const typeorm_1 = require("typeorm");
-const order_entity_1 = require("../entity/order-entity");
+const customer_order_entity_1 = require("../entity/customer-order-entity");
 let CustomerRepository = class CustomerRepository {
     getOrders() {
-        return typeorm_1.getManager().getRepository(order_entity_1.Order).find();
+        return typeorm_1.getManager().getRepository(customer_order_entity_1.CustomerOrder).find();
     }
     getOrderDetailsById(orderId) {
-        return typeorm_1.getManager().getRepository(order_entity_1.Order).find();
+        return typeorm_1.getManager().getRepository(customer_order_entity_1.CustomerOrder).findOne(orderId);
     }
     getInvoiceDetails(orderId) {
-        return typeorm_1.getManager().getRepository(order_entity_1.Order).find();
+        return typeorm_1.getManager().getRepository(customer_order_entity_1.CustomerOrder).findOne(orderId);
     }
 };
 CustomerRepository = __decorate([

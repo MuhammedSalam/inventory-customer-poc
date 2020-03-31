@@ -46,7 +46,7 @@ appConfigured.listen(appConfigured.get("port"), () => {
     console.log(("  App is running at http://localhost:%d in %s mode"), appConfigured.get("port"), appConfigured.get("env"));
     console.log("  Press CTRL-C to stop\n");
 });
-main();
+//main();
 typeorm_1.createConnection(appConfig.dbOptions).then((connection) => __awaiter(void 0, void 0, void 0, function* () {
     console.log("Connected to DB");
 })).catch(error => console.log("TypeORM connection error: ", error));
@@ -56,25 +56,26 @@ function main() {
         const containerClient = new ContainerClient(storageConnectionString, containerName);
         const checkpointStore = new BlobCheckpointStore(containerClient);
         // Create a consumer client for the event hub by specifying the checkpoint store.
-        const consumerClient = new EventHubConsumerClient(consumerGroup, connectionString, eventHubName, checkpointStore);
+        // const consumerClient = new EventHubConsumerClient(consumerGroup, connectionString, eventHubName, checkpointStore);
         // Subscribe to the events, and specify handlers for processing the events and errors.
-        const subscription = consumerClient.subscribe({
-            processEvents: (events, context) => __awaiter(this, void 0, void 0, function* () {
-                for (const event of events) {
-                    console.log(`Received event: '${event.body}' from partition: '${context.partitionId}' and consumer group: '${context.consumerGroup}'`);
-                }
-                // Update the checkpoint.
-                yield context.updateCheckpoint(events[events.length - 1]);
-            }),
-            processError: (err, context) => __awaiter(this, void 0, void 0, function* () {
-                console.log(`Error : ${err}`);
-            })
-        });
+        // const subscription = consumerClient.subscribe({
+        //     processEvents: async (events: any, context: any) => {
+        //         for (const event of events) {
+        //             console.log(`Received event: '${event.body}' from partition: '${context.partitionId}' and consumer group: '${context.consumerGroup}'`);
+        //         }
+        //         // Update the checkpoint.
+        //         await context.updateCheckpoint(events[events.length - 1]);
+        //     },
+        //     processError: async (err: any, context: any) => {
+        //         console.log(`Error : ${err}`);
+        //     }
+        // }
+        // );
         // After 30 seconds, stop processing.
         yield new Promise((resolve) => {
             setTimeout(() => __awaiter(this, void 0, void 0, function* () {
-                yield subscription.close();
-                yield consumerClient.close();
+                //   await subscription.close();
+                //   await consumerClient.close();
                 resolve();
             }), 30000);
         });

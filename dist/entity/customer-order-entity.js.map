@@ -1,0 +1,1 @@
+{"version":3,"file":"customer-order-entity.js","sourceRoot":"","sources":["../../src/entity/customer-order-entity.ts"],"names":[],"mappings":";;;;;;;;;;;AAAA,qCAAiE;AAIjE,IAAa,aAAa,GAA1B,MAAa,aAAa;CAezB,CAAA;AAZG;IADC,gCAAsB,EAAE;;kDACJ;AAKrB;IAHC,gBAAM,CAAC,EAEP,CAAC;;mDACoB;AAKtB;IAHC,gBAAM,CAAC,EAEP,CAAC;;6CACc;AAbP,aAAa;IADzB,gBAAM,CAAC,OAAO,CAAC;GACH,aAAa,CAezB;AAfY,sCAAa"}

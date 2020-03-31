@@ -38,7 +38,7 @@ appConfigured.listen(appConfigured.get("port"), () => {
     console.log("  Press CTRL-C to stop\n");
 });
 
-main();
+//main();
 
 createConnection(appConfig.dbOptions).then(async connection => {
     console.log("Connected to DB");
@@ -52,30 +52,30 @@ async function main() {
     const checkpointStore = new BlobCheckpointStore(containerClient);
 
     // Create a consumer client for the event hub by specifying the checkpoint store.
-    const consumerClient = new EventHubConsumerClient(consumerGroup, connectionString, eventHubName, checkpointStore);
+   // const consumerClient = new EventHubConsumerClient(consumerGroup, connectionString, eventHubName, checkpointStore);
 
     // Subscribe to the events, and specify handlers for processing the events and errors.
-    const subscription = consumerClient.subscribe({
+    // const subscription = consumerClient.subscribe({
         
-        processEvents: async (events: any, context: any) => {
-            for (const event of events) {
-                console.log(`Received event: '${event.body}' from partition: '${context.partitionId}' and consumer group: '${context.consumerGroup}'`);
-            }
-            // Update the checkpoint.
-            await context.updateCheckpoint(events[events.length - 1]);
-        },
+    //     processEvents: async (events: any, context: any) => {
+    //         for (const event of events) {
+    //             console.log(`Received event: '${event.body}' from partition: '${context.partitionId}' and consumer group: '${context.consumerGroup}'`);
+    //         }
+    //         // Update the checkpoint.
+    //         await context.updateCheckpoint(events[events.length - 1]);
+    //     },
 
-        processError: async (err: any, context: any) => {
-            console.log(`Error : ${err}`);
-        }
-    }
-    );
+    //     processError: async (err: any, context: any) => {
+    //         console.log(`Error : ${err}`);
+    //     }
+    // }
+   // );
 
     // After 30 seconds, stop processing.
     await new Promise((resolve) => {
         setTimeout(async () => {
-            await subscription.close();
-            await consumerClient.close();
+         //   await subscription.close();
+         //   await consumerClient.close();
             resolve();
         }, 30000);
     });

@@ -15,7 +15,7 @@ export class CustomerController implements interfaces.Controller {
     @httpGet("/")
     public async index(@request() req: express.Request, @response() res: express.Response) {
         try {
-            console.log("Received GetAllEmployees ==> GET");
+            console.log("Received GetAllOrders ==> GET");
 
             await this._customerRepository.getOrders().then((result: any) => {
                 console.log("Result : " + result);

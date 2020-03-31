@@ -42,7 +42,7 @@ let CustomerController = class CustomerController {
     index(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                console.log("Received GetAllEmployees ==> GET");
+                console.log("Received GetAllOrders ==> GET");
                 yield this._customerRepository.getOrders().then((result) => {
                     console.log("Result : " + result);
                     res.send(result);
