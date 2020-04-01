@@ -18,14 +18,22 @@ __decorate([
 ], CustomerOrder.prototype, "CustOrderID", void 0);
 __decorate([
     typeorm_1.Column({}),
-    __metadata("design:type", String)
-], CustomerOrder.prototype, "OrderDetails", void 0);
+    __metadata("design:type", Number)
+], CustomerOrder.prototype, "OrderId", void 0);
 __decorate([
     typeorm_1.Column({}),
     __metadata("design:type", Number)
-], CustomerOrder.prototype, "UserID", void 0);
+], CustomerOrder.prototype, "CustomerID", void 0);
+__decorate([
+    typeorm_1.Column({}),
+    __metadata("design:type", Date)
+], CustomerOrder.prototype, "OrderDate", void 0);
+__decorate([
+    typeorm_1.Column({}),
+    __metadata("design:type", Number)
+], CustomerOrder.prototype, "TotalAmount", void 0);
 CustomerOrder = __decorate([
-    typeorm_1.Entity("Order")
+    typeorm_1.Entity("CustomerOrder")
 ], CustomerOrder);
 exports.CustomerOrder = CustomerOrder;
 //# sourceMappingURL=customer-order-entity.js.map

@@ -1,7 +1,7 @@
 import { Entity, Column, PrimaryGeneratedColumn } from "typeorm";
 import { kMaxLength } from "buffer";
 
-@Entity("Order")
+@Entity("CustomerOrder")
 export class CustomerOrder {
 
     @PrimaryGeneratedColumn()
@@ -10,11 +10,19 @@ export class CustomerOrder {
     @Column({
         
     })
-    OrderDetails!: string;
+    OrderId!: number;
 
     @Column({
         
     })
-    UserID!: number;
+    CustomerID!: number;
+    @Column({
+        
+    })
+    OrderDate!: Date;
+    @Column({
+        
+    })
+    TotalAmount!: number;
     
 }

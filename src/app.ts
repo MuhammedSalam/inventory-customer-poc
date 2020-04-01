@@ -9,17 +9,8 @@ import { InversifyExpressServer, interfaces, TYPE } from "inversify-express-util
 import container from "./inversify.config";
 
 import './controllers/customer.controller';
-//const { EventHubClient, delay } = require("@azure/event-hubs");
-
-const { EventHubConsumerClient } = require("@azure/event-hubs");
-const { ContainerClient } = require("@azure/storage-blob");
-const { BlobCheckpointStore } = require("@azure/eventhubs-checkpointstore-blob");
-
-let connectionString = "Endpoint=sb://inventory-hub-ns.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=PUJyiOw89coBuCo0mZEg7W7sCgpNwhOT4wXTsgqLgE8=";
-let eventHubName = "inventoryeventhub";
-let consumerGroup = "$Default"; // name of the default consumer group
-let storageConnectionString = "DefaultEndpointsProtocol=https;AccountName=inventoryhubsa;AccountKey=EOYrC4PVUxXq+W9y1LWksFvrK65ifObEANnRcZhX+TTAXkq4gmJp0fNK8D8bwFVuzAqS4AyXjzLWeHm3nWAFPw==;EndpointSuffix=core.windows.net";
-let containerName = "inventory-container";
+var azure = require('azure');
+var helpers = require("./controllers/helpers/customer-order");
 const app = express();
 
 app.use(bodyParser.json());
@@ -38,51 +29,33 @@ appConfigured.listen(appConfigured.get("port"), () => {
     console.log("  Press CTRL-C to stop\n");
 });
 
-//main();
+let orderId = setInterval(() => subscribeOrder(), 2000);
+
 
 createConnection(appConfig.dbOptions).then(async connection => {
     console.log("Connected to DB");
-
 }).catch(error => console.log("TypeORM connection error: ", error));
 
 
-async function main() {
-    // Create a blob container client and a blob checkpoint store using the client.
-    const containerClient = new ContainerClient(storageConnectionString, containerName);
-    const checkpointStore = new BlobCheckpointStore(containerClient);
+function subscribeOrder() {
+    
+    var connectionString="Endpoint=sb://inventory-sb-poc.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=xHoaQB6DbhPOSrLaOdVhndwwi9YdSxvV26zjFdR08yE=";
+  
+    var serviceBusService = azure.createServiceBusService(connectionString);
+    serviceBusService.receiveQueueMessage('inventory-queue-poc', { isPeekLock: true }, function (error: any, lockedMessage: any) {
+        if (!error) {
+            helpers.saveCustomerOrder(lockedMessage.body);
+            helpers.saveCustomerOrderProduct(lockedMessage.body);
+            serviceBusService.deleteMessage(lockedMessage, function (deleteError: any) {
+            
+                if (!deleteError) {
+                    
+                    console.log("message deleted");
 
-    // Create a consumer client for the event hub by specifying the checkpoint store.
-   // const consumerClient = new EventHubConsumerClient(consumerGroup, connectionString, eventHubName, checkpointStore);
-
-    // Subscribe to the events, and specify handlers for processing the events and errors.
-    // const subscription = consumerClient.subscribe({
-        
-    //     processEvents: async (events: any, context: any) => {
-    //         for (const event of events) {
-    //             console.log(`Received event: '${event.body}' from partition: '${context.partitionId}' and consumer group: '${context.consumerGroup}'`);
-    //         }
-    //         // Update the checkpoint.
-    //         await context.updateCheckpoint(events[events.length - 1]);
-    //     },
-
-    //     processError: async (err: any, context: any) => {
-    //         console.log(`Error : ${err}`);
-    //     }
-    // }
-   // );
-
-    // After 30 seconds, stop processing.
-    await new Promise((resolve) => {
-        setTimeout(async () => {
-         //   await subscription.close();
-         //   await consumerClient.close();
-            resolve();
-        }, 30000);
+                }
+            });
+        }
     });
+
 }
-
-main().catch((err) => {
-    console.log("Error occurred: ", err);
-});
-
 module.exports = app;

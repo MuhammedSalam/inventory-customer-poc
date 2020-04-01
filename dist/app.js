@@ -27,15 +27,8 @@ const appConfig = __importStar(require("./common/app-config"));
 const inversify_express_utils_1 = require("inversify-express-utils");
 const inversify_config_1 = __importDefault(require("./inversify.config"));
 require("./controllers/customer.controller");
-//const { EventHubClient, delay } = require("@azure/event-hubs");
-const { EventHubConsumerClient } = require("@azure/event-hubs");
-const { ContainerClient } = require("@azure/storage-blob");
-const { BlobCheckpointStore } = require("@azure/eventhubs-checkpointstore-blob");
-let connectionString = "Endpoint=sb://inventory-hub-ns.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=PUJyiOw89coBuCo0mZEg7W7sCgpNwhOT4wXTsgqLgE8=";
-let eventHubName = "inventoryeventhub";
-let consumerGroup = "$Default"; // name of the default consumer group
-let storageConnectionString = "DefaultEndpointsProtocol=https;AccountName=inventoryhubsa;AccountKey=EOYrC4PVUxXq+W9y1LWksFvrK65ifObEANnRcZhX+TTAXkq4gmJp0fNK8D8bwFVuzAqS4AyXjzLWeHm3nWAFPw==;EndpointSuffix=core.windows.net";
-let containerName = "inventory-container";
+var azure = require('azure');
+var helpers = require("./controllers/helpers/customer-order");
 const app = express_1.default();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -46,43 +39,24 @@ appConfigured.listen(appConfigured.get("port"), () => {
     console.log(("  App is running at http://localhost:%d in %s mode"), appConfigured.get("port"), appConfigured.get("env"));
     console.log("  Press CTRL-C to stop\n");
 });
-//main();
+let orderId = setInterval(() => subscribeOrder(), 2000);
 typeorm_1.createConnection(appConfig.dbOptions).then((connection) => __awaiter(void 0, void 0, void 0, function* () {
     console.log("Connected to DB");
 })).catch(error => console.log("TypeORM connection error: ", error));
-function main() {
-    return __awaiter(this, void 0, void 0, function* () {
-        // Create a blob container client and a blob checkpoint store using the client.
-        const containerClient = new ContainerClient(storageConnectionString, containerName);
-        const checkpointStore = new BlobCheckpointStore(containerClient);
-        // Create a consumer client for the event hub by specifying the checkpoint store.
-        // const consumerClient = new EventHubConsumerClient(consumerGroup, connectionString, eventHubName, checkpointStore);
-        // Subscribe to the events, and specify handlers for processing the events and errors.
-        // const subscription = consumerClient.subscribe({
-        //     processEvents: async (events: any, context: any) => {
-        //         for (const event of events) {
-        //             console.log(`Received event: '${event.body}' from partition: '${context.partitionId}' and consumer group: '${context.consumerGroup}'`);
-        //         }
-        //         // Update the checkpoint.
-        //         await context.updateCheckpoint(events[events.length - 1]);
-        //     },
-        //     processError: async (err: any, context: any) => {
-        //         console.log(`Error : ${err}`);
-        //     }
-        // }
-        // );
-        // After 30 seconds, stop processing.
-        yield new Promise((resolve) => {
-            setTimeout(() => __awaiter(this, void 0, void 0, function* () {
-                //   await subscription.close();
-                //   await consumerClient.close();
-                resolve();
-            }), 30000);
-        });
+function subscribeOrder() {
+    var connectionString = "Endpoint=sb://inventory-sb-poc.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=xHoaQB6DbhPOSrLaOdVhndwwi9YdSxvV26zjFdR08yE=";
+    var serviceBusService = azure.createServiceBusService(connectionString);
+    serviceBusService.receiveQueueMessage('inventory-queue-poc', { isPeekLock: true }, function (error, lockedMessage) {
+        if (!error) {
+            helpers.saveCustomerOrder(lockedMessage.body);
+            helpers.saveCustomerOrderProduct(lockedMessage.body);
+            serviceBusService.deleteMessage(lockedMessage, function (deleteError) {
+                if (!deleteError) {
+                    console.log("message deleted");
+                }
+            });
+        }
     });
 }
-main().catch((err) => {
-    console.log("Error occurred: ", err);
-});
 module.exports = app;
 //# sourceMappingURL=app.js.map
