@@ -43,22 +43,26 @@ appConfigured.listen(appConfigured.get("port"), () => {
 let orderId = setInterval(() => subscribeOrder(), 2000);
 let queueName = environment_1.environment.QueueName;
 let connectionString = environment_1.environment.ServiceBusConnString;
+var serviceBusService = azure.createServiceBusService(connectionString);
 typeorm_1.createConnection(appConfig.dbOptions).then((connection) => __awaiter(void 0, void 0, void 0, function* () {
     console.log("Connected to DB: " + appConfig.dbOptions.database);
 })).catch(error => console.log("TypeORM connection error: ", error));
 function subscribeOrder() {
-    var serviceBusService = azure.createServiceBusService(connectionString);
     serviceBusService.receiveQueueMessage(queueName, { isPeekLock: true }, function (error, lockedMessage) {
         if (!error) {
-            console.log('message Received from ' + queueName);
-            helpers.saveCustomerOrder(lockedMessage.body);
-            helpers.saveCustomerOrderProduct(lockedMessage.body);
+            saveCustomerOrder(lockedMessage);
+        }
+    });
+}
+function saveCustomerOrder(lockedMessage) {
+    return __awaiter(this, void 0, void 0, function* () {
+        yield helpers.saveCustomerOrder(lockedMessage.body).then((res) => {
             serviceBusService.deleteMessage(lockedMessage, function (deleteError) {
                 if (!deleteError) {
                     console.log("Message deleted");
                 }
             });
-        }
+        });
     });
 }
 module.exports = app;

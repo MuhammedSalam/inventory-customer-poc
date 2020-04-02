@@ -19,8 +19,6 @@ export class CustomerRepository implements ICustomerRepository {
         return getManager()
             .query('GetOrderDetailsByOrderId @orderId=' + orderId);
 
-
-        //return getManager().getRepository(CustomerOrderProduct).findOne(orderId);
     }
 
     getInvoiceDetails(orderId: number) {

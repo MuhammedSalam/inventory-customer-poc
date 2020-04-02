@@ -30,32 +30,38 @@ appConfigured.listen(appConfigured.get("port"), () => {
     console.log("  Press CTRL-C to stop\n");
 });
 
-let orderId = setInterval(() => subscribeOrder(), 2000);
+let orderId = setInterval(() =>
+
+    subscribeOrder()
+
+    , 2000);
 let queueName = environment.QueueName;
 let connectionString = environment.ServiceBusConnString;
-
+var serviceBusService = azure.createServiceBusService(connectionString);
 createConnection(appConfig.dbOptions).then(async connection => {
     console.log("Connected to DB: " + appConfig.dbOptions.database);
 }).catch(error => console.log("TypeORM connection error: ", error));
 
 
 function subscribeOrder() {
-    var serviceBusService = azure.createServiceBusService(connectionString);
+    
     serviceBusService.receiveQueueMessage(queueName, { isPeekLock: true }, function (error: any, lockedMessage: any) {
         if (!error) {
-            console.log('message Received from ' + queueName);
-            helpers.saveCustomerOrder(lockedMessage.body);
-            helpers.saveCustomerOrderProduct(lockedMessage.body);
-            serviceBusService.deleteMessage(lockedMessage, function (deleteError: any) {
-
-                if (!deleteError) {
-
-                    console.log("Message deleted");
-
-                }
-            });
+            saveCustomerOrder(lockedMessage);
         }
     });
 
 }
+
+async function saveCustomerOrder(lockedMessage: any) {
+    await helpers.saveCustomerOrder(lockedMessage.body).then((res: any) => {
+        serviceBusService.deleteMessage(lockedMessage, function (deleteError: any) {
+            if (!deleteError) {
+                console.log("Message deleted");
+            }
+        });
+
+    });
+}
+
 module.exports = app;

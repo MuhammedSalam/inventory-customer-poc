@@ -16,7 +16,6 @@ let CustomerRepository = class CustomerRepository {
     getOrderDetailsByOrderId(orderId) {
         return typeorm_1.getManager()
             .query('GetOrderDetailsByOrderId @orderId=' + orderId);
-        //return getManager().getRepository(CustomerOrderProduct).findOne(orderId);
     }
     getInvoiceDetails(orderId) {
         return typeorm_1.getManager()
