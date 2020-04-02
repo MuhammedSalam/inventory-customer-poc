@@ -3,9 +3,9 @@
 import { Customer } from "../../entity/customer-entity";
 export interface ICustomerRepository {
 
-    getOrders(): any;
+    getOrders(userId: number): any;
 
-    getOrderDetailsById(orderId: number): any;
+    getOrderDetailsByOrderId(orderId: number): any;
 
     getInvoiceDetails(orderId: number): any;
 

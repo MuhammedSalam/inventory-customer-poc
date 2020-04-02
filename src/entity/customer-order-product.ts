@@ -24,5 +24,9 @@ export class CustomerOrderProduct {
         
     })
     ProductPrice!: number;
+    @Column({
+        
+    })
+    Quantity!: number;
     
 }

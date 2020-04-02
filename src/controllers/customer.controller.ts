@@ -12,12 +12,12 @@ export class CustomerController implements interfaces.Controller {
         this._customerRepository = customerRepository;
     }
 
-    @httpGet("/")
+    @httpGet("/:id")
     public async index(@request() req: express.Request, @response() res: express.Response) {
         try {
             console.log("Received GetAllOrders ==> GET");
 
-            await this._customerRepository.getOrders().then((result: any) => {
+            await this._customerRepository.getOrders(parseInt(req.params.id)).then((result: any) => {
                 console.log("Result : " + result);
 
                 res.send(result);
@@ -28,23 +28,27 @@ export class CustomerController implements interfaces.Controller {
         }
     }
 
-    @httpGet("/:id")
-    public GetById(@request() req: express.Request, @response() res: express.Response) {
+    @httpGet("/GetOrderDetails/:id")
+    public async GetOderDetailById(@request() req: express.Request, @response() res: express.Response) {
         try {
-            const posts = this._customerRepository.getOrderDetailsById(parseInt(req.params.id));
-            res.status(200).json(posts);
+            await this._customerRepository.getOrderDetailsByOrderId(parseInt(req.params.id)).then((result: any) => {
+                console.log("Result : " + result);
+
+                res.send(result);
+            });
         } catch (error) {
             res.status(400).json(error);
         }
     }
 
-    @httpPost("/")
-    public Index(@request() req: express.Request, @response() res: express.Response) {
+    @httpGet("/GetInvoiceDetails/:id")
+    public async Index(@request() req: express.Request, @response() res: express.Response) {
         try {
 
-            console.log(req.body);
-            const posts = this._customerRepository.getInvoiceDetails(req.body);
-            res.status(200).json(posts);
+            await this._customerRepository.getInvoiceDetails(parseInt(req.params.id)).then((result: any) => {
+                console.log("Result : " + result);
+                res.send(result);
+            });
         } catch (error) {
             res.status(400).json(error);
         }

@@ -32,6 +32,10 @@ __decorate([
     typeorm_1.Column({}),
     __metadata("design:type", Number)
 ], CustomerOrderProduct.prototype, "ProductPrice", void 0);
+__decorate([
+    typeorm_1.Column({}),
+    __metadata("design:type", Number)
+], CustomerOrderProduct.prototype, "Quantity", void 0);
 CustomerOrderProduct = __decorate([
     typeorm_1.Entity("CustomerOrderProduct")
 ], CustomerOrderProduct);

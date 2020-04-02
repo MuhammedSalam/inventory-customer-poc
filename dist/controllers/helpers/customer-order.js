@@ -24,11 +24,11 @@ exports.saveCustomerOrderProduct = function (custOrderProd) {
     for (let key in obj) {
         switch (key) {
             case "product":
-                console.log(obj["order"][0].OrderID);
                 custOrderProdObj.CustOrderId = obj["order"][0].OrderID;
                 custOrderProdObj.ProductName = obj[key][0].Name;
                 custOrderProdObj.ProductDescription = obj[key][0].Description;
                 custOrderProdObj.ProductPrice = obj[key][0].Price;
+                custOrderProdObj.Quantity = obj[key][0].ProdCount;
                 break;
         }
     }

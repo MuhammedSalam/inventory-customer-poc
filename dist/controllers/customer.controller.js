@@ -43,7 +43,7 @@ let CustomerController = class CustomerController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 console.log("Received GetAllOrders ==> GET");
-                yield this._customerRepository.getOrders().then((result) => {
+                yield this._customerRepository.getOrders(parseInt(req.params.id)).then((result) => {
                     console.log("Result : " + result);
                     res.send(result);
                 });
@@ -52,46 +52,53 @@ let CustomerController = class CustomerController {
             }
         });
     }
-    GetById(req, res) {
-        try {
-            const posts = this._customerRepository.getOrderDetailsById(parseInt(req.params.id));
-            res.status(200).json(posts);
-        }
-        catch (error) {
-            res.status(400).json(error);
-        }
+    GetOderDetailById(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                yield this._customerRepository.getOrderDetailsByOrderId(parseInt(req.params.id)).then((result) => {
+                    console.log("Result : " + result);
+                    res.send(result);
+                });
+            }
+            catch (error) {
+                res.status(400).json(error);
+            }
+        });
     }
     Index(req, res) {
-        try {
-            console.log(req.body);
-            const posts = this._customerRepository.getInvoiceDetails(req.body);
-            res.status(200).json(posts);
-        }
-        catch (error) {
-            res.status(400).json(error);
-        }
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                yield this._customerRepository.getInvoiceDetails(parseInt(req.params.id)).then((result) => {
+                    console.log("Result : " + result);
+                    res.send(result);
+                });
+            }
+            catch (error) {
+                res.status(400).json(error);
+            }
+        });
     }
 };
 __decorate([
-    inversify_express_utils_1.httpGet("/"),
+    inversify_express_utils_1.httpGet("/:id"),
     __param(0, inversify_express_utils_1.request()), __param(1, inversify_express_utils_1.response()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], CustomerController.prototype, "index", null);
 __decorate([
-    inversify_express_utils_1.httpGet("/:id"),
+    inversify_express_utils_1.httpGet("/GetOrderDetails/:id"),
     __param(0, inversify_express_utils_1.request()), __param(1, inversify_express_utils_1.response()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
-    __metadata("design:returntype", void 0)
-], CustomerController.prototype, "GetById", null);
+    __metadata("design:returntype", Promise)
+], CustomerController.prototype, "GetOderDetailById", null);
 __decorate([
-    inversify_express_utils_1.httpPost("/"),
+    inversify_express_utils_1.httpGet("/GetInvoiceDetails/:id"),
     __param(0, inversify_express_utils_1.request()), __param(1, inversify_express_utils_1.response()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], CustomerController.prototype, "Index", null);
 CustomerController = __decorate([
     inversify_express_utils_1.controller("/customers"),

@@ -10,14 +10,17 @@ const inversify_1 = require("inversify");
 const typeorm_1 = require("typeorm");
 const customer_order_entity_1 = require("../entity/customer-order-entity");
 let CustomerRepository = class CustomerRepository {
-    getOrders() {
+    getOrders(userId) {
         return typeorm_1.getManager().getRepository(customer_order_entity_1.CustomerOrder).find();
     }
-    getOrderDetailsById(orderId) {
-        return typeorm_1.getManager().getRepository(customer_order_entity_1.CustomerOrder).findOne(orderId);
+    getOrderDetailsByOrderId(orderId) {
+        return typeorm_1.getManager()
+            .query('GetOrderDetailsByOrderId @orderId=' + orderId);
+        //return getManager().getRepository(CustomerOrderProduct).findOne(orderId);
     }
     getInvoiceDetails(orderId) {
-        return typeorm_1.getManager().getRepository(customer_order_entity_1.CustomerOrder).findOne(orderId);
+        return typeorm_1.getManager()
+            .query('GetInvoiceDetailsByOrderId @orderId=' + orderId);
     }
 };
 CustomerRepository = __decorate([

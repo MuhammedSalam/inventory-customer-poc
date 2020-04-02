@@ -35,6 +35,7 @@ exports.saveCustomerOrderProduct = function (custOrderProd: any) {
                 custOrderProdObj.ProductName = obj[key][0].Name;
                 custOrderProdObj.ProductDescription = obj[key][0].Description;
                 custOrderProdObj.ProductPrice = obj[key][0].Price;
+                custOrderProdObj.Quantity=obj[key][0].ProdCount;
                 break;
         }
 
