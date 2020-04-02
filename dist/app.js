@@ -22,6 +22,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const bodyParser = __importStar(require("body-parser"));
 require("reflect-metadata");
+const environment_1 = require("./environments/environment");
 const typeorm_1 = require("typeorm");
 const appConfig = __importStar(require("./common/app-config"));
 const inversify_express_utils_1 = require("inversify-express-utils");
@@ -40,19 +41,21 @@ appConfigured.listen(appConfigured.get("port"), () => {
     console.log("  Press CTRL-C to stop\n");
 });
 let orderId = setInterval(() => subscribeOrder(), 2000);
+let queueName = environment_1.environment.QueueName;
+let connectionString = environment_1.environment.ServiceBusConnString;
 typeorm_1.createConnection(appConfig.dbOptions).then((connection) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log("Connected to DB");
+    console.log("Connected to DB: " + appConfig.dbOptions.database);
 })).catch(error => console.log("TypeORM connection error: ", error));
 function subscribeOrder() {
-    var connectionString = "Endpoint=sb://inventory-sb-poc.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=xHoaQB6DbhPOSrLaOdVhndwwi9YdSxvV26zjFdR08yE=";
     var serviceBusService = azure.createServiceBusService(connectionString);
-    serviceBusService.receiveQueueMessage('inventory-queue-poc', { isPeekLock: true }, function (error, lockedMessage) {
+    serviceBusService.receiveQueueMessage(queueName, { isPeekLock: true }, function (error, lockedMessage) {
         if (!error) {
+            console.log('message Received from ' + queueName);
             helpers.saveCustomerOrder(lockedMessage.body);
             helpers.saveCustomerOrderProduct(lockedMessage.body);
             serviceBusService.deleteMessage(lockedMessage, function (deleteError) {
                 if (!deleteError) {
-                    console.log("message deleted");
+                    console.log("Message deleted");
                 }
             });
         }

@@ -1,6 +1,7 @@
 import express from 'express';
 import * as bodyParser from "body-parser";
 import "reflect-metadata";
+import { environment } from './environments/environment';
 
 import { createConnection } from "typeorm";
 import * as appConfig from "./common/app-config";
@@ -30,27 +31,26 @@ appConfigured.listen(appConfigured.get("port"), () => {
 });
 
 let orderId = setInterval(() => subscribeOrder(), 2000);
-
+let queueName = environment.QueueName;
+let connectionString = environment.ServiceBusConnString;
 
 createConnection(appConfig.dbOptions).then(async connection => {
-    console.log("Connected to DB");
+    console.log("Connected to DB: " + appConfig.dbOptions.database);
 }).catch(error => console.log("TypeORM connection error: ", error));
 
 
 function subscribeOrder() {
-    
-    var connectionString="Endpoint=sb://inventory-sb-poc.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=xHoaQB6DbhPOSrLaOdVhndwwi9YdSxvV26zjFdR08yE=";
-  
     var serviceBusService = azure.createServiceBusService(connectionString);
-    serviceBusService.receiveQueueMessage('inventory-queue-poc', { isPeekLock: true }, function (error: any, lockedMessage: any) {
+    serviceBusService.receiveQueueMessage(queueName, { isPeekLock: true }, function (error: any, lockedMessage: any) {
         if (!error) {
+            console.log('message Received from ' + queueName);
             helpers.saveCustomerOrder(lockedMessage.body);
             helpers.saveCustomerOrderProduct(lockedMessage.body);
             serviceBusService.deleteMessage(lockedMessage, function (deleteError: any) {
-            
+
                 if (!deleteError) {
-                    
-                    console.log("message deleted");
+
+                    console.log("Message deleted");
 
                 }
             });
